@@ -29,8 +29,11 @@ public class Extract {
             StanfordCoreNLP pipeLine = initializeNLPPipeLine();
             println("Stanford NLP pipeline is initialized");
 
-            String text = "India, officially the Republic of India, is a country in South Asia. Peter lives in United States of America";
-            extractNameEntities(pipeLine, text);
+            String text = "India, officially the Republic of India, " +
+                    "is a country in South Asia. Peter. He lives in Canada"
+                    ;
+            List<EmbeddedToken> tokens = extractNameEntities(pipeLine, text);
+            println(tokens);
         } catch (Exception ex) {
             println(ex);
         }
@@ -42,7 +45,7 @@ public class Extract {
         return new StanfordCoreNLP(props);
     }
 
-    public static void extractNameEntities(StanfordCoreNLP pipeline, String text) {
+    public static List extractNameEntities(StanfordCoreNLP pipeline, String text) {
         List tokens = new ArrayList<>();
         // run all Annotators on the passed-in text
         Annotation document = new Annotation(text);
@@ -97,10 +100,11 @@ public class Extract {
 
         //TODO - do some cool stuff with these tokens!
         LOG.debug("We extracted {} tokens of interest from the input text", tokens.size());
+        return tokens;
     }
 
     private static void handleEntity(String inKey, StringBuilder inSb, List inTokens) {
-        println(inSb + " is a " + inKey);
+        LOG.debug(inSb + " is a " + inKey);
         inTokens.add(new EmbeddedToken(inKey, inSb.toString()));
         inSb.setLength(0);
     }
@@ -156,5 +160,10 @@ class EmbeddedToken {
         super();
         this.name = name;
         this.value = value;
+    }
+
+    @Override public String toString()
+    {
+        return "Name [" + name + "] Value [" + value + "]";
     }
 }
